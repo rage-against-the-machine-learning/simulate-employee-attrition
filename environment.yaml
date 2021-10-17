@@ -1,0 +1,10 @@
+name: sim-proj
+channels:
+  - defaults
+dependencies:
+  - matplotlib
+  - numpy
+  - pandas
+  - pymc3
+  - pyyaml
+  - seaborn
