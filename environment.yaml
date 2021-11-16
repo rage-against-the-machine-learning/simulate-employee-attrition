@@ -8,3 +8,5 @@ dependencies:
   - pymc3
   - pyyaml
   - seaborn
+  - sklearn
+  
