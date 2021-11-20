@@ -26,9 +26,18 @@ class LogisticRegress:
         """
         self.X = X_data
         self.y = y_data
-        self.logreg_parmas = logreg_params
+        
         self.verbose = verbose
-
+        if logreg_params is None:
+            self.logreg_params = dict(
+                penalty='none',
+                random_state=config.SEED,
+                verbose=1 if self.verbose else 0,
+                n_jobs=-1
+            )
+        else:
+            self.logreg_parmas = logreg_params
+        
     @property
     def scale_data(self):
         ss = StandardScaler()
@@ -36,13 +45,6 @@ class LogisticRegress:
         if self.verbose: print("Standard Scaler applied to X data...")
         
     def regress(self):
-        if self.logreg_parmas is None:
-            self.logreg_params = dict(
-                penalty='none',
-                random_state=config.SEED,
-                verbose=1 if self.verbose else 0,
-                n_jobs=-1
-            )
         if self.verbose: print(f"\nLogistic Regression parameters: {self.logreg_params}...")
 
         self.scale_data
