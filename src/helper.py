@@ -1,11 +1,13 @@
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split 
-from sklearn.preprocessing import LabelBinarizer, LabelEncoder
+from sklearn.preprocessing import LabelBinarizer, LabelEncoder, StandardScaler
 
 import config
-
-
+        
 class PreProcess:
     
     def __init__(self, X_data: pd.DataFrame, verbose: bool = False):
@@ -103,4 +105,97 @@ class IBMData:
 
         return self.X_train, self.X_test, self.y_train, self.y_test
 
-    
+
+class CoMultiLinearity:
+
+    def __init__(self, all_data: pd.DataFrame, verbose: bool = False):
+        """Determine if there is colinearity or multilinearity in the data
+        :all_data: dataframe that has the response variable as well
+            data with all features represented numerically is best
+        """
+        self.data = all_data
+        self.verbose = verbose
+        self.corr = self.calc_correlation(plot=self.verbose)
+        self.VIF = self.calc_VIF
+
+    @property
+    def calc_correlation (self, plot: bool = False):
+        """Calculate correlation dataframe
+        :plot: if Truue, plot will be generated
+        """
+        if plot:
+            corr = self.data.corr()
+            fig = plt.figure(1, figsize=(20, 20))
+            mask = np.triu(np.ones_like(corr, dtype=bool))
+
+            sns.heatmap(corr.round(2),
+                        cbar=True,
+                        mask=mask,
+                        annot=True,
+                        center=0,
+                        square=True, 
+                        linewidths=.5, 
+                        cbar_kws={"shrink": .5},
+                        cmap=sns.diverging_palette(230, 20, as_cmap=True))
+            plt.xticks(rotation=75)
+            
+            if self.verbose:
+                print('Saving Correlation heatmat at: "../reports/figures/corr-heatmap-annot.png"')
+            fig.savefig('../reports/figures/corr-heatmap-annot.png')
+
+        self.corr = self.data.corr()
+
+    @property
+    def calc_VIF(self):
+        """Caclulate VIF on all features
+        """
+        def calculate_vif(df):    
+            vif, tolerance = {}, {}
+            features = df.columns
+            
+            for feature in features:
+                X = [f for f in features if f != feature]        
+                X, y = df[X], df[feature]
+                r2 = LinearRegression().fit(X, y).score(X, y)                                
+                tolerance[feature] = 1 - r2
+                vif[feature] = 1/(tolerance[feature])
+            return pd.DataFrame({'VIF': vif, 'Tolerance': tolerance})
+
+        vif_df = calculate_vif(self.data)
+
+        if self.verbose:
+            print(vif_df)
+        self.VIF = vif_df
+
+    def find_collinear_features (self, correlation_threshold: float):
+        """Find the collinear features
+        :correlation_threshold: a threshold between -1 and 1
+            for any feature-pair w/ correlation greater than this threshold, keep first alphabetical
+        """
+        collinear_pairs = list()
+
+        for i, row in self.corr.iterrows():
+            corr_cols = (np.where(row > 0.6))[0]
+            pair = set()
+            for j in corr_cols:
+                pair = set([i, self.corr.columns[j]])
+                if self.corr.loc[i, self.corr.columns[j]] != 1 and pair not in collinear_pairs: 
+                    collinear_pairs.append(pair) 
+
+        if self.verbose:
+            print(collinear_pairs)
+        return collinear_pairs
+
+    def find_multilinear_features (self, vif_threshold: float):
+        """Find multilinear features
+        :vif_threshold: float
+        https://towardsdatascience.com/statistics-in-python-collinearity-and-multicollinearity-4cc4dcd82b3f
+        """
+        if vif_threshold > 1: 
+            raise ValueError("vif_threshold must be greater than 1")
+        multilin_feats = self.VIF[self.VIF['VIF'] > vif_threshold]
+        return multilin_feats.index.tolist()
+
+
+if __name__ == '__main__':
+    None
