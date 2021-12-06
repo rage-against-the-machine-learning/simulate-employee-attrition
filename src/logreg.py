@@ -38,19 +38,19 @@ class LogisticRegress:
         else:
             self.logreg_parmas = logreg_params
         
-    @property
-    def scale_data(self):
-        ss = StandardScaler()
-        self.X_ss = ss.fit_transform(self.X)
-        if self.verbose: print("Standard Scaler applied to X data...")
+    # @property
+    # def scale_data(self):
+    #     ss = StandardScaler()
+    #     self.X_ss = ss.fit_transform(self.X)
+    #     if self.verbose: print("Standard Scaler applied to X data...")
         
     def regress(self):
         if self.verbose: print(f"\nLogistic Regression parameters: {self.logreg_params}...")
 
-        self.scale_data
+        # self.scale_data
         self.lr = LogisticRegression(**self.logreg_params)
-        self.lr.fit(self.X_ss, self.y)
-        if self.verbose: print("\nLogistic Regression fitted on scaled X, and y...")
+        self.lr.fit(self.X, self.y)
+        if self.verbose: print("\nLogistic Regression fitted on X, and y...")
 
     def predict(self, X):
         if self.verbose: print("\nGenerating predictions...")
