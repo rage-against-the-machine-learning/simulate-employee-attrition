@@ -8,7 +8,6 @@ from sklearn.preprocessing import LabelBinarizer, LabelEncoder, StandardScaler
 
 import config
         
-
 class PreProcess:
     
     def __init__(self, X_data: pd.DataFrame, verbose: bool = False):
