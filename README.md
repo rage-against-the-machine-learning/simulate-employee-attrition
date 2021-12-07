@@ -31,23 +31,25 @@ $ jupyter kernelspec list
 ```sh
 .
 ├── README.md
+├── arena
+│   ├── ARENA-output.pdf
+│   └── Attrition-Model-v-2021-30-11.doe
 ├── data             # hidden file directory, download data from kaggle
 │   └── raw
 │       └── WA_Fn-UseC_-HR-Employee-Attrition.csv
-├── environment.yaml
+├── environment.yaml # file to create virtual conda environment
 ├── notebooks
-│   ├── IBM-Data-EDA-for-SIM.ipynb
-│   └── LogReg.ipynb
+│   ├── IBM-Data-EDA-for-SIM.ipynb   # statistical analysis, EDA, plots
+│   └── LogReg.ipynb # work & results for logistic regression
 ├── reports
 │   ├── figures      # plots generated
-│   └── README.md   # data dictionary
+│   └── README.md    # data dictionary
 └── src
-    ├── config.py
-    ├── dectree.py
-    ├── helper.py
-    └── logreg.py
+    ├── config.py    # global variables 
+    ├── dectree.py   # decision tree code
+    ├── helper.py    # data preprocessing & prep 
+    └── logreg.py    # logisitc regression binary classifier
 ```
 
 ### References:
-
 Data Source: https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset
